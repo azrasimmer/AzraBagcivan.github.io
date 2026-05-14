@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İzmir Art Stops | Spot Recommender</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #ffffff; }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .choice-btn { transition: all 0.2s ease; border: 1px solid #e2e8f0; }
+        .choice-btn:hover { border-color: #000; background-color: #f8fafc; }
+        .hidden-step { display: none; }
+    </style>
+</head>
+<body class="text-slate-900 antialiased">
+
+    <div id="app" class="min-h-screen flex flex-col items-center justify-center p-6">
+        <div class="max-w-md w-full">
+            
+            <!-- Introduction Screen -->
+            <div id="step-intro" class="fade-in text-center">
+                <h1 class="text-3xl font-light mb-4 tracking-tight">İzmir Art Stops</h1>
+                <p class="text-slate-500 mb-8 font-light text-sm leading-relaxed">
+                    Find the perfect location for your canvas. Answer 5 brief questions to discover your next painting spot in İzmir.
+                </p>
+                <button onclick="nextStep(1)" class="w-full py-4 border border-black rounded-full hover:bg-black hover:text-white transition-all duration-300 font-medium tracking-wide uppercase text-xs">Start Selection</button>
+            </div>
+
+            <!-- Quiz Container -->
+            <div id="quiz-container" class="hidden-step">
+                
+                <div id="step-1" class="hidden-step fade-in">
+                    <span class="text-[10px] uppercase tracking-widest text-slate-400 mb-2 block">Question 1 / 5</span>
+                    <h2 class="text-xl mb-6 font-semibold">What type of scenery would you like to paint?</h2>
+                    <div class="grid grid-cols-1 gap-3">
+                        <button onclick="saveChoice('scenery', 'Sea', 2)" class="choice-btn p-4 rounded-xl text-left text-sm">Sea</button>
+                        <button onclick="saveChoice('scenery', 'Forest', 2)" class="choice-btn p-4 rounded-xl text-left text-sm">Forest</button>
+                        <button onclick="saveChoice('scenery', 'Urban', 2)" class="choice-btn p-4 rounded-xl text-left text-sm">Urban</button>
+                        <button onclick="saveChoice('scenery', 'Historical', 2)" class="choice-btn p-4 rounded-xl text-left text-sm">Historical</button>
+                    </div>
+                </div>
+
+                <div id="step-2" class="hidden-step fade-in">
+                    <span class="text-[10px] uppercase tracking-widest text-slate-400 mb-2 block">Question 2 / 5</span>
+                    <h2 class="text-xl mb-6 font-semibold">What kind of atmosphere do you prefer?</h2>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="saveChoice('atmosphere', 'Quiet', 3)" class="choice-btn p-4 rounded-xl text-center text-sm">Quiet</button>
+                        <button onclick="saveChoice('atmosphere', 'Lively', 3)" class="choice-btn p-4 rounded-xl text-center text-sm">Lively</button>
+                        <button onclick="saveChoice('atmosphere', 'Romantic', 3)" class="choice-btn p-4 rounded-xl text-center text-sm">Romantic</button>
+                        <button onclick="saveChoice('atmosphere', 'Isolated', 3)" class="choice-btn p-4 rounded-xl text-center text-sm">Isolated</button>
+                    </div>
+                </div>
+
+                <div id="step-3" class="hidden-step fade-in">
+                    <span class="text-[10px] uppercase tracking-widest text-slate-400 mb-2 block">Question 3 / 5</span>
+                    <h2 class="text-xl mb-6 font-semibold">What time of day do you want to paint?</h2>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="saveChoice('time', 'Morning', 4)" class="choice-btn p-4 rounded-xl text-center text-sm">Morning</button>
+                        <button onclick="saveChoice('time', 'Afternoon', 4)" class="choice-btn p-4 rounded-xl text-center text-sm">Afternoon</button>
+                        <button onclick="saveChoice('time', 'Sunset', 4)" class="choice-btn p-4 rounded-xl text-center text-sm">Sunset</button>
+                        <button onclick="saveChoice('time', 'Night', 4)" class="choice-btn p-4 rounded-xl text-center text-sm">Night</button>
+                    </div>
+                </div>
+
+                <div id="step-4" class="hidden-step fade-in">
+                    <span class="text-[10px] uppercase tracking-widest text-slate-400 mb-2 block">Question 4 / 5</span>
+                    <h2 class="text-xl mb-6 font-semibold">How far are you willing to travel?</h2>
+                    <div class="grid grid-cols-1 gap-3">
+                        <button onclick="saveChoice('travel', 'Nearby', 5)" class="choice-btn p-4 rounded-xl text-left text-sm">Nearby only</button>
+                        <button onclick="saveChoice('travel', '30mins', 5)" class="choice-btn p-4 rounded-xl text-left text-sm">Up to 30 minutes</button>
+                        <button onclick="saveChoice('travel', 'Anywhere', 5)" class="choice-btn p-4 rounded-xl text-left text-sm">Anywhere in İzmir</button>
+                    </div>
+                </div>
+
+                <div id="step-5" class="hidden-step fade-in">
+                    <span class="text-[10px] uppercase tracking-widest text-slate-400 mb-2 block">Question 5 / 5</span>
+                    <h2 class="text-xl mb-6 font-semibold">What type of lighting do you prefer?</h2>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="finalizeQuiz('Bright')" class="choice-btn p-4 rounded-xl text-center text-sm">Bright Sun</button>
+                        <button onclick="finalizeQuiz('Soft')" class="choice-btn p-4 rounded-xl text-center text-sm">Soft Natural</button>
+                        <button onclick="finalizeQuiz('Sunset')" class="choice-btn p-4 rounded-xl text-center text-sm">Sunset Colors</button>
+                        <button onclick="finalizeQuiz('Shaded')" class="choice-btn p-4 rounded-xl text-center text-sm">Shaded Areas</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="step-result" class="hidden-step fade-in text-center">
+                <div class="bg-white p-10 border border-slate-100 rounded-3xl shadow-sm mb-8">
+                    <div class="inline-block p-3 bg-blue-50 rounded-full mb-4">
+                        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    </div>
+                    <span class="text-[10px] uppercase tracking-widest text-blue-500 font-bold mb-2 block">Recommended Spot</span>
+                    <h2 id="result-name" class="text-2xl font-semibold mb-4 text-slate-800">...</h2>
+                    <p id="result-desc" class="text-slate-500 text-sm font-light leading-relaxed"></p>
+                </div>
+                <button onclick="restart()" class="text-slate-400 hover:text-black transition-all text-[10px] uppercase tracking-[0.2em]">Retake Quiz</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let selections = {};
+
+        const spots = [
+            { name: "Kordon (Alsancak)", scenery: "Sea", atmosphere: "Lively", travel: "Nearby", desc: "A vibrant waterfront where the city meets the sea. Perfect for capturing urban energy and stunning orange sunset hues." },
+            { name: "İnciraltı Urban Forest", scenery: "Forest", atmosphere: "Quiet", travel: "Nearby", desc: "Vast wooded areas and serene walking paths. Ideal for artists seeking deep greens and soft, dappled forest light." },
+            { name: "Pergamon Acropolis", scenery: "Historical", atmosphere: "Isolated", travel: "Anywhere", desc: "Perched high above history. Offers epic perspectives and strong archaeological textures under bright, direct sunlight." },
+            { name: "Karagöl (Yamanlar)", scenery: "Forest", atmosphere: "Isolated", travel: "Anywhere", desc: "A high-altitude crater lake surrounded by mystical pine forests. Best for quiet, moody reflections and isolation." },
+            { name: "Sığacık (Kaleiçi)", scenery: "Historical", atmosphere: "Romantic", travel: "30mins", desc: "Narrow streets, bougainvillea, and white-washed walls. A romantic setting for detailed watercolor or architectural sketching." },
+            { name: "Bostanlı Shore", scenery: "Sea", atmosphere: "Lively", travel: "Nearby", desc: "Modern coastal architecture meets the Gulf of İzmir. Great for capturing people, modern steps, and wide bay views." },
+            { name: "Varyant Hill", scenery: "Urban", atmosphere: "Lively", travel: "Nearby", desc: "Overlooking the red roofs of old İzmir and the historic Elevator. Best for wide-angle urban sketches and bird's-eye views." },
+            { name: "Ephesus Ancient City", scenery: "Historical", atmosphere: "Isolated", travel: "Anywhere", desc: "World-famous marble streets and grand columns. Best visited early morning for soft, dramatic lighting on ancient textures." }
+        ];
+
+        function nextStep(step) {
+            document.getElementById('step-intro').classList.add('hidden-step');
+            document.getElementById('quiz-container').classList.remove('hidden-step');
+            showSubStep(step);
+        }
+
+        function showSubStep(step) {
+            for(let i=1; i<=5; i++) {
+                document.getElementById('step-' + i).classList.add('hidden-step');
+            }
+            document.getElementById('step-' + step).classList.remove('hidden-step');
+        }
+
+        function saveChoice(key, value, next) {
+            selections[key] = value;
+            showSubStep(next);
+        }
+
+        function finalizeQuiz(lightChoice) {
+            selections.lighting = lightChoice;
+            const match = findBestMatch();
+            
+            document.getElementById('quiz-container').classList.add('hidden-step');
+            document.getElementById('step-result').classList.remove('hidden-step');
+            
+            document.getElementById('result-name').innerText = match.name;
+            document.getElementById('result-desc').innerText = match.desc;
+        }
+
+        function findBestMatch() {
+            let best = spots[0];
+            let maxScore = -1;
+
+            spots.forEach(spot => {
+                let score = 0;
+                if(spot.scenery === selections.scenery) score += 3;
+                if(spot.atmosphere === selections.atmosphere) score += 2;
+                if(spot.travel === selections.travel) score += 1;
+                
+                if(score > maxScore) {
+                    maxScore = score;
+                    best = spot;
+                }
+            });
+            return best;
+        }
+
+        function restart() {
+            selections = {};
+            document.getElementById('step-result').classList.add('hidden-step');
+            document.getElementById('step-intro').classList.remove('hidden-step');
+        }
+    </script>
+</body>
+</html>
