@@ -3,100 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İzmir Art Stops | Spot Recommender</title>
+    <title>İzmir Art Stops | Recommendation Tool</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #ffffff; }
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .choice-btn { transition: all 0.2s ease; border: 1px solid #e2e8f0; }
-        .choice-btn:hover { border-color: #000; background-color: #f8fafc; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+            /* Resim kullanmadan oluşturulan 'Yumuşak Sanatçı Paleti' Arkaplanı */
+            background-color: #f3f4f6;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(197, 85%, 88%, 1) 0px, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(33, 100%, 93%, 1) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(210, 80%, 90%, 1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, hsla(180, 70%, 92%, 1) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, hsla(20, 100%, 94%, 1) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        .fade-in { animation: fadeIn 0.6s ease-out forwards; }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(15px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        #app-card {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .choice-btn { 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.5);
+        }
+        .choice-btn:hover { 
+            background-color: #fff;
+            transform: scale(1.02);
+            border-color: #000;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
         .hidden-step { display: none; }
+
+        .art-title {
+            letter-spacing: 0.15em;
+            background: linear-gradient(to right, #1a1a1a, #666);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
     </style>
 </head>
-<body class="text-slate-900 antialiased">
+<body class="antialiased selection:bg-blue-100 selection:text-blue-900">
 
-    <div id="app" class="min-h-screen flex flex-col items-center justify-center p-6">
-        <div class="max-w-md w-full">
+    <div id="app" class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-8">
+        <div id="app-card" class="max-w-md w-full p-8 sm:p-10 rounded-[2.5rem] relative overflow-hidden">
             
             <!-- Introduction Screen -->
             <div id="step-intro" class="fade-in text-center">
-                <h1 class="text-3xl font-light mb-4 tracking-tight">İzmir Art Stops</h1>
-                <p class="text-slate-500 mb-8 font-light text-sm leading-relaxed">
-                    Find the perfect location for your canvas. Answer 5 brief questions to discover your next painting spot in İzmir.
+                <h1 class="text-2xl font-light mb-2 art-title uppercase">İzmir Art Stops</h1>
+                <p class="text-[10px] tracking-[0.3em] text-slate-400 uppercase mb-8">For the modern painter</p>
+                <div class="h-px w-8 bg-slate-200 mx-auto mb-8"></div>
+                <p class="text-slate-500 mb-12 font-light text-sm leading-relaxed italic">
+                    "Find the light, find your canvas. A guide for artists in the heart of the Aegean."
                 </p>
-                <button onclick="nextStep(1)" class="w-full py-4 border border-black rounded-full hover:bg-black hover:text-white transition-all duration-300 font-medium tracking-wide uppercase text-xs">Start Selection</button>
+                <button onclick="nextStep(1)" class="w-full py-4 bg-black text-white rounded-2xl hover:bg-slate-800 transition-all duration-300 font-medium tracking-widest uppercase text-[10px]">Start Exploration</button>
             </div>
 
             <!-- Quiz Container -->
             <div id="quiz-container" class="hidden-step">
                 
+                <!-- Step 1: Scenery -->
                 <div id="step-1" class="hidden-step fade-in">
-                    <span class="text-[10px] uppercase tracking-widest text-slate-400 mb-2 block">Question 1 / 5</span>
-                    <h2 class="text-xl mb-6 font-semibold">What type of scenery would you like to paint?</h2>
+                    <span class="text-[9px] uppercase tracking-[0.3em] text-slate-400 mb-4 block font-bold">01 / 05 — Concept</span>
+                    <h2 class="text-xl mb-8 font-light tracking-tight text-slate-800">What <span class="font-semibold italic">scenery</span> speaks to you?</h2>
                     <div class="grid grid-cols-1 gap-3">
-                        <button onclick="saveChoice('scenery', 'Sea', 2)" class="choice-btn p-4 rounded-xl text-left text-sm">Sea</button>
-                        <button onclick="saveChoice('scenery', 'Forest', 2)" class="choice-btn p-4 rounded-xl text-left text-sm">Forest</button>
-                        <button onclick="saveChoice('scenery', 'Urban', 2)" class="choice-btn p-4 rounded-xl text-left text-sm">Urban</button>
-                        <button onclick="saveChoice('scenery', 'Historical', 2)" class="choice-btn p-4 rounded-xl text-left text-sm">Historical</button>
+                        <button onclick="saveChoice('scenery', 'Sea', 2)" class="choice-btn p-5 rounded-2xl text-left text-[11px] uppercase tracking-widest text-slate-700">The Aegean Sea</button>
+                        <button onclick="saveChoice('scenery', 'Forest', 2)" class="choice-btn p-5 rounded-2xl text-left text-[11px] uppercase tracking-widest text-slate-700">Deep Pine Forests</button>
+                        <button onclick="saveChoice('scenery', 'Urban', 2)" class="choice-btn p-5 rounded-2xl text-left text-[11px] uppercase tracking-widest text-slate-700">Urban Energy</button>
+                        <button onclick="saveChoice('scenery', 'Historical', 2)" class="choice-btn p-5 rounded-2xl text-left text-[11px] uppercase tracking-widest text-slate-700">Ancient Ruins</button>
                     </div>
                 </div>
 
+                <!-- Step 2: Atmosphere -->
                 <div id="step-2" class="hidden-step fade-in">
-                    <span class="text-[10px] uppercase tracking-widest text-slate-400 mb-2 block">Question 2 / 5</span>
-                    <h2 class="text-xl mb-6 font-semibold">What kind of atmosphere do you prefer?</h2>
+                    <span class="text-[9px] uppercase tracking-[0.3em] text-slate-400 mb-4 block font-bold">02 / 05 — Mood</span>
+                    <h2 class="text-xl mb-8 font-light tracking-tight text-slate-800">Preferred <span class="font-semibold italic">atmosphere</span>?</h2>
                     <div class="grid grid-cols-2 gap-3">
-                        <button onclick="saveChoice('atmosphere', 'Quiet', 3)" class="choice-btn p-4 rounded-xl text-center text-sm">Quiet</button>
-                        <button onclick="saveChoice('atmosphere', 'Lively', 3)" class="choice-btn p-4 rounded-xl text-center text-sm">Lively</button>
-                        <button onclick="saveChoice('atmosphere', 'Romantic', 3)" class="choice-btn p-4 rounded-xl text-center text-sm">Romantic</button>
-                        <button onclick="saveChoice('atmosphere', 'Isolated', 3)" class="choice-btn p-4 rounded-xl text-center text-sm">Isolated</button>
+                        <button onclick="saveChoice('atmosphere', 'Quiet', 3)" class="choice-btn p-5 rounded-2xl text-center text-[10px] uppercase tracking-widest">Quiet</button>
+                        <button onclick="saveChoice('atmosphere', 'Lively', 3)" class="choice-btn p-5 rounded-2xl text-center text-[10px] uppercase tracking-widest">Lively</button>
+                        <button onclick="saveChoice('atmosphere', 'Romantic', 3)" class="choice-btn p-5 rounded-2xl text-center text-[10px] uppercase tracking-widest">Romantic</button>
+                        <button onclick="saveChoice('atmosphere', 'Isolated', 3)" class="choice-btn p-5 rounded-2xl text-center text-[10px] uppercase tracking-widest">Isolated</button>
                     </div>
                 </div>
 
+                <!-- Step 3: Time -->
                 <div id="step-3" class="hidden-step fade-in">
-                    <span class="text-[10px] uppercase tracking-widest text-slate-400 mb-2 block">Question 3 / 5</span>
-                    <h2 class="text-xl mb-6 font-semibold">What time of day do you want to paint?</h2>
+                    <span class="text-[9px] uppercase tracking-[0.3em] text-slate-400 mb-4 block font-bold">03 / 05 — Timing</span>
+                    <h2 class="text-xl mb-8 font-light tracking-tight text-slate-800">Your <span class="font-semibold italic">painting hour</span>?</h2>
                     <div class="grid grid-cols-2 gap-3">
-                        <button onclick="saveChoice('time', 'Morning', 4)" class="choice-btn p-4 rounded-xl text-center text-sm">Morning</button>
-                        <button onclick="saveChoice('time', 'Afternoon', 4)" class="choice-btn p-4 rounded-xl text-center text-sm">Afternoon</button>
-                        <button onclick="saveChoice('time', 'Sunset', 4)" class="choice-btn p-4 rounded-xl text-center text-sm">Sunset</button>
-                        <button onclick="saveChoice('time', 'Night', 4)" class="choice-btn p-4 rounded-xl text-center text-sm">Night</button>
+                        <button onclick="saveChoice('time', 'Morning', 4)" class="choice-btn p-5 rounded-2xl text-center text-[10px] uppercase tracking-widest">Morning</button>
+                        <button onclick="saveChoice('time', 'Afternoon', 4)" class="choice-btn p-5 rounded-2xl text-center text-[10px] uppercase tracking-widest">Afternoon</button>
+                        <button onclick="saveChoice('time', 'Sunset', 4)" class="choice-btn p-5 rounded-2xl text-center text-[10px] uppercase tracking-widest">Sunset</button>
+                        <button onclick="saveChoice('time', 'Night', 4)" class="choice-btn p-5 rounded-2xl text-center text-[10px] uppercase tracking-widest">Night</button>
                     </div>
                 </div>
 
+                <!-- Step 4: Distance -->
                 <div id="step-4" class="hidden-step fade-in">
-                    <span class="text-[10px] uppercase tracking-widest text-slate-400 mb-2 block">Question 4 / 5</span>
-                    <h2 class="text-xl mb-6 font-semibold">How far are you willing to travel?</h2>
+                    <span class="text-[9px] uppercase tracking-[0.3em] text-slate-400 mb-4 block font-bold">04 / 05 — Travel</span>
+                    <h2 class="text-xl mb-8 font-light tracking-tight text-slate-800">How <span class="font-semibold italic">far</span> shall we go?</h2>
                     <div class="grid grid-cols-1 gap-3">
-                        <button onclick="saveChoice('travel', 'Nearby', 5)" class="choice-btn p-4 rounded-xl text-left text-sm">Nearby only</button>
-                        <button onclick="saveChoice('travel', '30mins', 5)" class="choice-btn p-4 rounded-xl text-left text-sm">Up to 30 minutes</button>
-                        <button onclick="saveChoice('travel', 'Anywhere', 5)" class="choice-btn p-4 rounded-xl text-left text-sm">Anywhere in İzmir</button>
+                        <button onclick="saveChoice('travel', 'Nearby', 5)" class="choice-btn p-5 rounded-2xl text-left text-[11px] uppercase tracking-widest">Keep it nearby</button>
+                        <button onclick="saveChoice('travel', '30mins', 5)" class="choice-btn p-5 rounded-2xl text-left text-[11px] uppercase tracking-widest">Up to 30 mins</button>
+                        <button onclick="saveChoice('travel', 'Anywhere', 5)" class="choice-btn p-5 rounded-2xl text-left text-[11px] uppercase tracking-widest">Explore all of İzmir</button>
                     </div>
                 </div>
 
+                <!-- Step 5: Lighting -->
                 <div id="step-5" class="hidden-step fade-in">
-                    <span class="text-[10px] uppercase tracking-widest text-slate-400 mb-2 block">Question 5 / 5</span>
-                    <h2 class="text-xl mb-6 font-semibold">What type of lighting do you prefer?</h2>
+                    <span class="text-[9px] uppercase tracking-[0.3em] text-slate-400 mb-4 block font-bold">05 / 05 — Light</span>
+                    <h2 class="text-xl mb-8 font-light tracking-tight text-slate-800">Desired <span class="font-semibold italic">lighting</span>?</h2>
                     <div class="grid grid-cols-2 gap-3">
-                        <button onclick="finalizeQuiz('Bright')" class="choice-btn p-4 rounded-xl text-center text-sm">Bright Sun</button>
-                        <button onclick="finalizeQuiz('Soft')" class="choice-btn p-4 rounded-xl text-center text-sm">Soft Natural</button>
-                        <button onclick="finalizeQuiz('Sunset')" class="choice-btn p-4 rounded-xl text-center text-sm">Sunset Colors</button>
-                        <button onclick="finalizeQuiz('Shaded')" class="choice-btn p-4 rounded-xl text-center text-sm">Shaded Areas</button>
+                        <button onclick="finalizeQuiz('Bright')" class="choice-btn p-5 rounded-2xl text-center text-[10px] uppercase tracking-widest">Bright Sun</button>
+                        <button onclick="finalizeQuiz('Soft')" class="choice-btn p-5 rounded-2xl text-center text-[10px] uppercase tracking-widest">Soft Light</button>
+                        <button onclick="finalizeQuiz('Sunset')" class="choice-btn p-5 rounded-2xl text-center text-[10px] uppercase tracking-widest">Golden Hour</button>
+                        <button onclick="finalizeQuiz('Shaded')" class="choice-btn p-5 rounded-2xl text-center text-[10px] uppercase tracking-widest">Shaded</button>
                     </div>
                 </div>
             </div>
 
+            <!-- Result Screen -->
             <div id="step-result" class="hidden-step fade-in text-center">
-                <div class="bg-white p-10 border border-slate-100 rounded-3xl shadow-sm mb-8">
-                    <div class="inline-block p-3 bg-blue-50 rounded-full mb-4">
-                        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    </div>
-                    <span class="text-[10px] uppercase tracking-widest text-blue-500 font-bold mb-2 block">Recommended Spot</span>
-                    <h2 id="result-name" class="text-2xl font-semibold mb-4 text-slate-800">...</h2>
-                    <p id="result-desc" class="text-slate-500 text-sm font-light leading-relaxed"></p>
+                <div class="mb-6 opacity-40">
+                    <svg class="w-8 h-8 mx-auto text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                    </svg>
                 </div>
-                <button onclick="restart()" class="text-slate-400 hover:text-black transition-all text-[10px] uppercase tracking-[0.2em]">Retake Quiz</button>
+                <span class="text-[9px] uppercase tracking-[0.4em] text-slate-400 font-bold mb-3 block">Your Destination</span>
+                <h2 id="result-name" class="text-3xl font-light mb-6 tracking-tighter text-slate-900 italic underline underline-offset-8 decoration-1 decoration-slate-200">...</h2>
+                <p id="result-desc" class="text-slate-500 text-sm font-light leading-relaxed mb-12 px-2"></p>
+                
+                <button onclick="restart()" class="w-full py-4 border border-slate-200 rounded-2xl hover:bg-black hover:text-white hover:border-black transition-all duration-500 text-[10px] uppercase tracking-widest font-medium">Reset Journey</button>
             </div>
 
         </div>
@@ -106,14 +158,13 @@
         let selections = {};
 
         const spots = [
-            { name: "Kordon (Alsancak)", scenery: "Sea", atmosphere: "Lively", travel: "Nearby", desc: "A vibrant waterfront where the city meets the sea. Perfect for capturing urban energy and stunning orange sunset hues." },
-            { name: "İnciraltı Urban Forest", scenery: "Forest", atmosphere: "Quiet", travel: "Nearby", desc: "Vast wooded areas and serene walking paths. Ideal for artists seeking deep greens and soft, dappled forest light." },
-            { name: "Pergamon Acropolis", scenery: "Historical", atmosphere: "Isolated", travel: "Anywhere", desc: "Perched high above history. Offers epic perspectives and strong archaeological textures under bright, direct sunlight." },
-            { name: "Karagöl (Yamanlar)", scenery: "Forest", atmosphere: "Isolated", travel: "Anywhere", desc: "A high-altitude crater lake surrounded by mystical pine forests. Best for quiet, moody reflections and isolation." },
-            { name: "Sığacık (Kaleiçi)", scenery: "Historical", atmosphere: "Romantic", travel: "30mins", desc: "Narrow streets, bougainvillea, and white-washed walls. A romantic setting for detailed watercolor or architectural sketching." },
-            { name: "Bostanlı Shore", scenery: "Sea", atmosphere: "Lively", travel: "Nearby", desc: "Modern coastal architecture meets the Gulf of İzmir. Great for capturing people, modern steps, and wide bay views." },
-            { name: "Varyant Hill", scenery: "Urban", atmosphere: "Lively", travel: "Nearby", desc: "Overlooking the red roofs of old İzmir and the historic Elevator. Best for wide-angle urban sketches and bird's-eye views." },
-            { name: "Ephesus Ancient City", scenery: "Historical", atmosphere: "Isolated", travel: "Anywhere", desc: "World-famous marble streets and grand columns. Best visited early morning for soft, dramatic lighting on ancient textures." }
+            { name: "Kordon Waterfront", scenery: "Sea", atmosphere: "Lively", travel: "Nearby", desc: "The iconic heart of İzmir. Best for capturing sea breeze, urban energy, and open horizons. Perfect for people-watching and plein air sketching." },
+            { name: "İnciraltı Urban Forest", scenery: "Forest", atmosphere: "Quiet", travel: "Nearby", desc: "A sanctuary of trees and silence inside the city. Ideal for studying complex light filtering through leaves and peaceful lagoon views." },
+            { name: "Pergamon Acropolis", scenery: "Historical", atmosphere: "Isolated", travel: "Anywhere", desc: "Majestic ancient ruins on a hill. Perfect for historical textures, dramatic morning shadows, and bird's-eye landscape painting." },
+            { name: "Karagöl Lake", scenery: "Forest", atmosphere: "Isolated", travel: "Anywhere", desc: "A mystical crater lake high in the mountains. Best for moody landscapes, deep forest greens, and glass-like water reflections." },
+            { name: "Sığacık Old Town", scenery: "Historical", atmosphere: "Romantic", travel: "30mins", desc: "Charming narrow streets with bougainvillea and stone houses. Perfect for intimate watercolor studies and historical architectural sketches." },
+            { name: "Bostanlı Sunset Sets", scenery: "Sea", atmosphere: "Lively", travel: "Nearby", desc: "Modern architectural wooden steps meeting the water. Specifically designed for capturing the best sunsets in the city." },
+            { name: "Ephesus Ruins", scenery: "Historical", atmosphere: "Isolated", travel: "Anywhere", desc: "Grand marble structures and ancient columns. Best for capturing the grandeur of civilization and the play of soft light on white stone." }
         ];
 
         function nextStep(step) {
@@ -151,9 +202,9 @@
 
             spots.forEach(spot => {
                 let score = 0;
-                if(spot.scenery === selections.scenery) score += 3;
-                if(spot.atmosphere === selections.atmosphere) score += 2;
-                if(spot.travel === selections.travel) score += 1;
+                if(spot.scenery === selections.scenery) score += 5;
+                if(spot.atmosphere === selections.atmosphere) score += 3;
+                if(spot.travel === selections.travel) score += 2;
                 
                 if(score > maxScore) {
                     maxScore = score;
